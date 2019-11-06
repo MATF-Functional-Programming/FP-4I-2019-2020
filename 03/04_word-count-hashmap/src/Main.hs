@@ -6,6 +6,9 @@ import qualified Data.HashMap.Strict as HashMap
 
 import Data.Tuple
 
+-- IO a - omotacki tip koji predstavlja runtime akciju
+--        koja vraca/generise instancu tipa a
+
 main :: IO ()
 main = do
     -- Učitavamo stdin u listu
