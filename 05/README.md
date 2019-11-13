@@ -1,25 +1,25 @@
 # Functors, Applicative functors, Monads
 
 ## Functors
-- Functor - sve sto implementira `fmap` ili `<$>` (infiksni fmap)
-- `kind`, za Functor, je `* -> *` (videti: `:info Functor`) 
+- `Functor` - sve sto implementira `fmap` ili `<$>` (infiksni `fmap`)
+- `kind`, za `Functor`, je `* -> *` (videti: `:info Functor`) 
 - Stoga `instance Functor Either` ne moze, vec `instance Functor (Either a)` - mora biti tacno **1** tipski parametar
 - Neki funktori: `Maybe a`, `Either a b`, `[]`, `IO` (svi su oni vise od funktora ali o tome kasnije)
 - `(->) r` je takodje funktor. Ali sta je to?
     `r -> a` se moze pisati prefiksno kao `(->) r a` - funkcija 2 argumenta, stoga se mora primeniti delimicno zbog 
     kind-a Functor klase.
-    U `Control.Monad.Instances` se nalazi impl
+    U `Control.Monad.Instances` se nalazi implementacija
 
     ```hs
     instance Functor ((->) r) where
         fmap f g = (\x -> f (g x))
     ```
         
-    Tumacenje:
-        - krecemo od potpisa za fmap: `fmap :: (a -> b) -> f a -> f b`
-        - zameniti `f` sa `((->) r)`: `fmap :: (a -> b) -> ((->) r a) -> ((->) r b)`
-        - napisemo infiksno: `fmap :: (a -> b) -> (r -> a) -> (r -> b)`
-        - podseca na nesto? kompozicija funkcija!
+    - Tumacenje:
+        - Krecemo od potpisa za fmap: `fmap :: (a -> b) -> f a -> f b`
+        - Zameniti `f` sa `((->) r)`: `fmap :: (a -> b) -> ((->) r a) -> ((->) r b)`
+        - Napisemo infiksno: `fmap :: (a -> b) -> (r -> a) -> (r -> b)`
+        - Podseca na nesto? Kompozicija funkcija!
 
     ```hs
     instance Functor ((->) r) where
@@ -123,7 +123,7 @@
     Just "johntravolta"  
     ```
 
-- Lista je Applicative
+- `[]` je `Applicative`
     ```hs
     instance Applicative [] where  
         pure x = [x]  
