@@ -153,17 +153,83 @@
     Just [3,4]  
     ```
 
-### Monads (TODO)
-- ako imamo vrednost sa kontekstom `m a`, kako da ga damo funkciji `a -> m b`?
+### Monads
+- Ako imamo vrednost sa kontekstom `m a`, kako da ga damo funkciji `a -> m b`?
+- Zelimo funkciju koja radi: `(Monad m) => m a -> (a -> m b) -> m b` 
+- _Bind_ funkcija `:t (>>=)`
+- **Monade** su aplikativni funktori koji definisu i bind (`>>=`)
 - `:t (>>=)`
-
-
-#### IO Monad (TODO)
-- `<-` za dodavanje imena
-- `return` za wrap
-- `IO` je Functor - implementirati
+- `[]`, `Maybe`, `Either`, `[]`, `(->) r`, `IO` su monade
+- Kako bismo definisali `>>=` za `Maybe`?
     ```hs
-    fmap f action = do 
-        result <- action
-        return (f result)
+    (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b  
+    Nothing  >>= f = Nothing  
+    (Just x) >>= f = f x  
+    ```
+- Primeri
+    ```hs 
+    gchi> let f = \x -> Just (x+1)
+    ghci> f 1  
+    Just 2
+    ghci> Just 3 >>= f 
+    Just 4  
+    ghci> Nothing >>= f 
+    Nothing  
+    ghci> Just "smile" >>= \x -> Just (x ++ " :)")  
+    Just "smile :)"  
+    ghci> Nothing >>= \x -> Just (x ++ " :)")  
+    Nothing  
+    ghci> Just 3 >>= \x -> if x > 2 then Just x else Nothing  
+    Just 3  
+    ghci> Just 1 >>= \x -> if x > 2 then Just x else Nothing  
+    Nothing  
+    ```
+- `:info Monad`
+    - razlika `>>` i `>>=`, kada koristiti koji?
+    - `>>` dolazi sa podrazumevanom implementacijom
+        ```hs
+        ghci> Nothing >> Just 3  
+        Nothing  
+        ghci> Just 3 >> Just 4  
+        Just 4  
+        ghci> Just 3 >> Nothing  
+        Nothing  
+        ```
+    - `return` isto sto i `pure`
+    - `fail` se ne koristi u nasim kodovima, vec se koristi unutar jezika
+- Kako bismo "dokazali" da je `Maybe` instanca `Monad` klase?
+    ```hs
+    instance Monad Maybe where  
+        return x = Just x  
+        Nothing >>= f = Nothing  
+        Just x >>= f  = f x  
+        fail _ = Nothing  
+    ```
+- Kako bismo "dokazali" da je `[]` instanca `Monad` klase?
+    ```hs
+    instance Monad [] where  
+        return x = [x]  
+        xs >>= f = concat (map f xs)  
+        fail _ = []  
+
+    ghci> [3,4,5] >>= \x -> [x,-x]  
+    [3,-3,4,-4,5,-5]  
+    ```
+- Zakoni:
+    - _levi identitet_ : `return x >>= f`  je isto sto i `f x` (_levi identitet_)
+    - _desni identitet_: `m >> return`     je isto sto i `m`   (_desni identitet_)
+    - _asocijativnost_ : `(m >>= f) >>= g` je isto sto i `m >>= (\x -> f x >>= g)` 
+- Videti primer sa vezbi
+- Postoji specijalna notacija u sintaksi Haskell-a za monade zvana `do` notacija
+    ```hs
+    foo :: Maybe String  
+    foo = Just 3   >>= (\x -> 
+          Just "!" >>= (\y -> 
+          Just (show x ++ y)))  
+    
+    foo :: Maybe String  
+    foo = do  
+        x <- Just 3  
+        y <- Just "!"  
+        Just (show x ++ y) 
     ```
