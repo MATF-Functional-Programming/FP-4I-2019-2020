@@ -34,6 +34,14 @@ data Model = Waiting
 
 -- 4
 
+-- whichSort :: Ord a => [a] -> String
+-- whichSort lst =
+--     let f = head lst   
+--         l = last lst
+--     in  if (f < l) then "LT"
+--         else if (f > l) then "GT"
+--         else "EQ"
+
 whichSort :: Ord a => [a] -> String
 whichSort lst 
     | null lst = "EQ"
@@ -42,7 +50,6 @@ whichSort lst
     | ifAll (==) lst  = "EQ" 
     | otherwise = "not sorted list"
     where ifAll f lst = all (\t -> f (fst t) (snd t)) $ zip lst (tail lst)
-
 
 -- 5
 
