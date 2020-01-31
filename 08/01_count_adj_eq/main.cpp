@@ -6,6 +6,13 @@
 #include <numeric>
 #include <vector>
 
+// Mozemo iskoristiti std::inner_product funkciju
+// Operacije * i + cemo zameniti sa == i +
+// Dakle, za kolekcije xs i ys, racunamo:
+// (x1 == y1) + (x2 == y2) + ...
+// Mi zapravo poredimo kolekciju samu sa sobom
+// pa ce ys biti isto xs samo bez prvog elementa
+// Pocetna vrednost (akumulator) je 0
 template <typename T>
 int count_adj_equals(const T& xs)
 {
@@ -13,7 +20,9 @@ int count_adj_equals(const T& xs)
         std::cbegin(xs), std::cend(xs) - 1,
         std::cbegin(xs) + 1,
         0,
+        // Mozemo koristiti auto takodje
         [](const int& x, const int &y) { return x + y; },
+        // Ovde ne znamo tip elemenata kolekcije, pa stoga auto
         [](const auto& x, const auto &y) { return x == y ? 1 : 0; }
     );
 }

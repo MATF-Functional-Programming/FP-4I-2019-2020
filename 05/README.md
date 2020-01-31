@@ -155,6 +155,7 @@
 
 ### Monads
 - Ako imamo vrednost sa kontekstom `m a`, kako da ga damo funkciji `a -> m b`?
+- Ukoliko resimo ovaj problem, mozemo praviti i kompozicije ovakvih funkcija!
 - Zelimo funkciju koja radi: `(Monad m) => m a -> (a -> m b) -> m b` 
 - _Bind_ funkcija `:t (>>=)`
 - **Monade** su aplikativni funktori koji definisu i bind (`>>=`)

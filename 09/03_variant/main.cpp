@@ -6,13 +6,20 @@
 
 #include <cassert>
 
-// A helper to create overloaded function objects
+// Pravimo pomocni funkcionalni objekat koji ce u sebi
+// sadrzati vise funkcionalnih objekata 
+// "overloaded function objects"
 template <typename... Fs>
 struct overloaded : Fs... { using Fs::operator()...; };
 
 template <typename... Fs> overloaded(Fs...) -> overloaded<Fs...>;
 
 
+// Nasa klasa program se moze nalaziti u jednom od tri stanja:
+// init_t, running_t i finished_t 
+// Pritom, samo ukoliko smo u stanju running_t smemo uraditi logiku,
+// u finished_t stanju smemo samo pokupiti rezultat
+// Kako obezbediti ovo?
 class program_t {
 private:
     class init_t {
@@ -59,13 +66,12 @@ private:
 
     };
 
-    std::variant < init_t
-                 , running_t
-                 , finished_t
-                 > m_state;
-
+    // Tip koji u jednom trenutku moze biti samo jedno od navedenog
+    // Slicno kao Either u Haskell-u s tim sto je Either ogranicen na 2
+    std::variant<init_t, running_t, finished_t> m_state;
 
 public:
+    // Prilikom konstrukcije smo u inicijalnom stanju
     program_t()
         : m_state(init_t())
     {
@@ -73,12 +79,19 @@ public:
 
     void count_words(const std::string& file_name)
     {
+        // Samo mozemo pozvati brojanje ako smo u inicijalnom stanju
         assert(m_state.index() == 0);
 
+        // Menjamo stanje
         m_state = running_t(file_name);
 
+        // Brojimo (sada mozemo jer je m_state tipa running_t)
         std::get<running_t>(m_state).count_words();
 
+        // Brojanje moze trajati, radi simplifikacije nemamo 
+        // paralelnih poslova - ali za njih smo u running_t stanju
+
+        // Prelazimo u zavrsno stanje
         counting_finished();
     }
 
@@ -93,6 +106,12 @@ public:
 
     unsigned count() const
     {
+        // Ukoliko pozovemo count(), rezultat zavisi od toga
+        // u kom smo trenutno stanju
+        // Koristimo nas predefinisani funkcionalni objekat i 
+        // funkciju std::visit kako bismo posetili taj objekat
+        // Pozvace se odredjena funkcija u zavisnosti od toga 
+        // u kom smo trenutno stanju
         return std::visit(overloaded {
                     [](init_t) {
                         return (unsigned)0;

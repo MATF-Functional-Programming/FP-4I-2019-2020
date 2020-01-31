@@ -26,8 +26,8 @@ focusNext (MkRing (l:ls) rs) = MkRing ls (l:rs)
 
 
 focusPrev :: Ring t -> Ring t
-focusPrev (MkRing [] [])    = MkRing [] []
-focusPrev (MkRing ls [])    = focusPrev $ MkRing [] (reverse ls)
+focusPrev (MkRing [] [])     = MkRing [] []
+focusPrev (MkRing ls [])     = focusPrev $ MkRing [] (reverse ls)
 focusPrev (MkRing ls (r:rs)) = MkRing (r:ls) rs
 
 
